@@ -23,3 +23,4 @@ Please use the following table to grade the student's assignment:
 |      9      |                 |                     |               |
 
 `Assignment 2:https://github.com/e23oneil35/JuneTT-SamplingData_R.git`
+Assignment 3: https://e23oneil35.github.io/website_assignment_3_emo82/
