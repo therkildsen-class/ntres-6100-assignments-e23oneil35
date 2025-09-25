@@ -72,7 +72,8 @@ economist |>
 economist |> 
   select(HDI, CPI,Region ) |> 
   ggplot()+
-  geom_point(mapping = aes(x =CPI, y = HDI, color = Region, size = 2))
+  geom_point(mapping = aes(x =CPI, y = HDI, color = Region, size = 2))+
+  guides (size = "none")
 ```
 
 #### 1.5 Set the size of the points proportional to `HDI.Rank`
@@ -97,7 +98,7 @@ economist |>
 #### 1.7 Fit a separate **straight line** for **each region** instead, and turn off the confidence interval.
 
 ```{r}
-economist |> 
+graph1_7 <- economist |> 
   select(HDI, CPI,Region, HDI.Rank ) |> 
   ggplot()+
   geom_point(mapping = aes(x =CPI, y = HDI, color = Region))+
@@ -107,12 +108,7 @@ economist |>
 #### 1.8 Building on top of the previous plot, show each `Region` in a different facet.
 
 ```{r}
-economist |> 
-  select(HDI, CPI,Region, HDI.Rank ) |> 
-  ggplot()+
-  geom_point(mapping = aes(x =CPI, y = HDI, color = Region))+
-  geom_smooth(mapping = aes(x= CPI, y= HDI, color = Region), method = "lm", se = F)+
-  facet_grid(mapping = aes(x = CPI, y= HDI, color = Region ))
+graph1_7 + facet_wrap(~Region)
 ```
 
 #### 1.9 Show the distribution of `HDI` in each region using density plot. Set transparency to 0.5.
@@ -121,13 +117,17 @@ economist |>
 economist |> 
   select(HDI,Region) |> 
   ggplot()+
-  geom_density(mapping = aes(x = HDI, color = Region, fill=Region, alpha = 0.5))
+  geom_density(mapping = aes(x = HDI,fill=Region,alpha = 0.5))+
+  guides(alpha = "none")
 ```
 
 #### 1.10 Show the distribution of `HDI` in each region using histogram and facetting.
 
 ```{r}
-## Write your code here
+economist |> 
+  select(HDI, Region) |> 
+  ggplot()+
+  geom_histogram(mapping = aes(x = ))
 ```
 
 #### 1.11 Show the distribution of `HDI` in each region using a box plot. Set the transparency of these boxes to 0.5 and do not show outlier points with the box plot. Instead, show all data points for each country in the same plot (Hint: `geom_jitter()` or `position_jitter()` might be useful.)
