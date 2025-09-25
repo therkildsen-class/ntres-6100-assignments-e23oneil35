@@ -1,5 +1,7 @@
 library(tidyverse)
 library(skimr)
+install.packages("devtools")
+devtools::install_github("r-lib/conflicted")
 
 coronavirus <- read_csv('https://raw.githubusercontent.com/RamiKrispin/coronavirus/master/csv/coronavirus.csv')
 
@@ -111,5 +113,34 @@ vacc |>
 
 # Summarize ---------------------------------------------------------------
 
+coronavirus |> 
+ filter(type == "confirmed")
+
+skim(coronavirus)
+
+coronavirus |> 
+  filter(country == "canada")
+
+view(coronavirus)
+
+coronavirus |> 
+  group_by(date, type) |> 
+  summarise(total = sum(cases)) |> 
+  filter(date ="2023-01-01")
+
+coronavirus |> 
+  filter(type == "death") |> 
+  group_by(date) |> 
+  summarise(death_count = sum("cases"))
+
+  
 
 
+
+# Code --------------------------------------------------------------------
+
+
+##restarting
+
+library(tidyverse)
+library(skim 
