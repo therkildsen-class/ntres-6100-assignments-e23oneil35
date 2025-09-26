@@ -45,7 +45,8 @@ economist <- read.csv("https://raw.githubusercontent.com/nt246/NTRES-6100-data-s
 #### 1.1 Show the first few rows of `economist_data`.
 
 ```{r}
-kable(economist)
+kable(head(economist))
+
 ```
 
 #### 1.2 Explore the relationship between human development index (`HDI`) and the corruption perception index (`CPI`) with a scatter plot as the following.
