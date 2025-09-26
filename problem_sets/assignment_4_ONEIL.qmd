@@ -135,7 +135,7 @@ economist |>
 
 ```{r}
 economist |> 
-  ggplot(data, aes(x = Region, y = HDI, fill = Region)) +
+  ggplot(data,mapping= aes(x = Region, y = HDI, fill = Region)) +
   geom_boxplot(alpha = 0.5, outlier.shape = NA) +  
   geom_jitter(aes(color = Region), width = 0.2, height = 0, size = 2) + 
   theme_minimal() +
@@ -173,8 +173,9 @@ For the following exercise, **transform the data as instructed.** Try to use `ti
 
 ```{r}
 Theoph |> 
-  select(Wt) |> 
-  head()
+  select(Subject,Wt) |> 
+  head() |> 
+  kable()
 ```
 
 #### 2.2 Rename the `Wt` column to `Weight` and `conc` column to `Concentration` in the `Theoph` dataset.
@@ -184,7 +185,8 @@ Theoph |>
   select( Subject, Wt, Dose, Time,conc) |> 
   rename("Weight" = Wt) |> 
   rename("Concentration" = conc) |> 
-  head()
+  head() |> 
+  kable()
 ```
 
 #### 2.3 Extract the `Dose` greater than 4.5 and `Time` greater than the mean `Time`.
@@ -194,7 +196,8 @@ Theoph |>
 Theoph |> 
   filter(Dose > 4.5) |> 
   filter(Time > mean(Time)) |> 
-  head()
+  head() |> 
+  kable()
   
   
   
@@ -211,7 +214,8 @@ Theoph |>
   select(Wt, Dose, Time, conc) |> 
   arrange(desc(Time)) |> 
   arrange(Wt) |> 
-  head()
+  head() |> 
+  kable()
 ```
 
 #### 2.5 Create a new column called `Quanity` that equal to `Wt` x `Dose` in the `Theoph` dataset. This will tell you the absolute quantity of drug administered to the subject (in mg). Replace the `Dose` variable with `Quanity`.
@@ -222,7 +226,8 @@ Theoph |>
   mutate(Quantiy = Wt*Dose) |> 
   mutate(Dose = NULL) |> 
   select(Wt,Quantiy,Time, conc)|> 
-  head()
+  head() |> 
+  kable()
   
   
 ```
@@ -239,7 +244,8 @@ Show data for 6 subjects with the smallest sum of `Dose` as below. **Do not defi
     sum_dose = sum(Dose, na.rm = TRUE)
   ) %>%
   arrange(sum_dose) %>%
-  slice_head(n = 6)
+  slice_head(n = 6) |> 
+    kable()
 ```
 
 ## Exercise 3. Unemployment in the US 1967-2015 (OPTIONAL)
