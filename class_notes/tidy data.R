@@ -1,5 +1,5 @@
 library(tidyverse)
-
+coronavirus <- read_csv('https://raw.githubusercontent.com/RamiKrispin/coronavirus/master/csv/coronavirus.csv')
 
 table1
 ?table1
@@ -15,6 +15,9 @@ table3
 
 table4a
 table4b
+
+
+
 
 ###rate of cases by population
 table1 |> 
@@ -71,3 +74,36 @@ table5 |>
 
 coronavirus
 view(coronavirus)
+
+
+# 09/30/2025 tidy data ----------------------------------------------------
+
+coronavirus |> 
+  filter(country == "US", cases >=0) |> 
+  ggplot()+
+  geom_line(aes(x = date, y = cases, color = type))
+
+##seperate out "types" by confimed, death, recovery# 
+
+corona_wide <- coronavirus |>
+  pivot_wider(names_from = type, values_from = cases)
+
+##try to make the rgaph above using the corona_wide data##
+corona_wide |> 
+  filter(country == "US",death >=0, confirmed) |> 
+  ggplot()+
+  geom_line(aes(x = date, y = cases, color = type))
+### you can't!!
+
+
+coronavirus_ttd <- coronavirus |> 
+  group_by(country, type) |>
+  summarize(total_cases = sum(cases)) |>
+  pivot_wider(names_from = type, values_from = total_cases)
+
+# Now we can plot this easily
+ggplot(coronavirus_ttd) +
+  geom_label(mapping = aes(x = confirmed, y = death, label = country))
+  
+
+
