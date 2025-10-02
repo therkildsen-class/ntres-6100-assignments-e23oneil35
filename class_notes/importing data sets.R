@@ -32,3 +32,21 @@ cbind(colnames(msa), colnames(msa_clean))
 parse_number("$100")
 parse_number("80%")
 parse_number("It cost $100")
+
+
+# ##Day 2  ----------------------------------------------------------------
+
+
+##parse function
+parse_double("1,23",locale =locale(decimal_mark = ","))
+parse_number("123.456.789", locale = locale(grouping_mark = "."))
+
+
+mess = read_tsv("https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/refs/heads/main/datasets/messy_data.tsv", locale = locale(decimal_mark = ","))
+
+
+mess = read_tsv("https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/refs/heads/main/datasets/messy_data.tsv", locale = locale(decimal_mark = ","), na = c("Missing", "N/A"))
+problems()
+
+
+
