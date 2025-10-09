@@ -1,5 +1,7 @@
 library(tidyverse)
-library(nycflights13) ##install.packages("nycflights13")
+library(nycflights13)
+
+##install.packages("nycflights13")
 
 
 # Row binding -------------------------------------------------------------
@@ -80,3 +82,31 @@ airports2
 flights2 |> 
   left_join(airports2, join_by(origin == faa)) |> 
   left_join(airports2, join_by (dest == faa), suffix = c("_origin", "_dest"))
+
+
+# Filter_join -------------------------------------------------------------
+
+airports |>
+  semi_join(flights2, join_by(faa == origin))
+
+flights2 |> 
+  anti_join(airports, join_by(dest == faa)) |> 
+  distinct(dest)
+  count(dest)
+  
+  
+## filter flights to only show flights with planes that have flown at least 100 flights (hint: use summarize ()or count () first)
+  
+planes
+planes_gt100 <- flights2 |> 
+  group_by(tailnum) |> 
+  summarise(count =n()) |> 
+  filter(count > 100)
+
+##short hand way 
+flights2 |> 
+  count(tailnum) |> 
+  filter(n >100)
+
+flights |> 
+  semi_join(planes_gt100)
