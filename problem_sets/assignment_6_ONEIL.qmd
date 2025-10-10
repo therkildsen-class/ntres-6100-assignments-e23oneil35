@@ -1,0 +1,130 @@
+---
+title: "assignment_6_ONEIL"
+format: html
+---
+
+# Assignment 6: Data import and tidy data
+
+```{r}
+#| message: false
+library(tidyverse)
+library(knitr)
+#install.packages("knitr")
+```
+
+## Exercise 1. Tibble and Data Import
+
+Import the data frames listed below into R and [parse](https://r4ds.had.co.nz/data-import.html#parsing-a-vector) the columns appropriately when needed. Watch out for the formatting oddities of each dataset. Print the results directly, **without** using `kable()`.
+
+**You only need to finish any three out of the five questions in this exercise in order to get credit.**
+
+#### 1.1 Create the following tibble manually, first using `tribble()` and then using `tibble()`. Print both results. \[We didn't have time to cover this in class, but look up how these functions work [here](https://r4ds.had.co.nz/tibbles.html#creating-tibbles)\]
+
+`tibble():`
+
+```{r}
+tibble(a = c(1,2),b= c(2.1, 3.2),c= c("apple", "orange")) |> 
+  print()
+  
+```
+
+`tribble():`
+
+```{r}
+tribble(
+  ~a, ~b, ~c,
+  1, 2.1, "apple",
+  2, 3.2, "orange"
+) |> 
+  print()
+```
+
+#### 1.2 Import `https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/dataset2.txt` into R. Change the column names into “Name”, “Weight”, “Price”.
+
+```{r}
+fruit<- read.csv("https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/dataset2.txt", header = FALSE)
+
+colnames(fruit)<- c("Name", "Weight", "Price")
+
+tibble(fruit)
+```
+
+#### 1.3 Import `https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/dataset3.txt` into R. Watch out for the first few lines, missing values, separators, quotation marks, and deliminaters.
+
+```{r}
+fruit_1.3 <-read_delim("https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/dataset3.txt", quote ="/", skip = 2, na = c("Not Available", "?"))
+ tibble(fruit_1.3)
+```
+
+## Exercise 2. Weather station
+
+This dataset contains the weather and air quality data collected by a weather station in Taiwan. It was obtained from the Environmental Protection Administration, Executive Yuan, R.O.C. (Taiwan).
+
+#### 2.1 Variable descriptions
+
+-   The text file `https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/2015y_Weather_Station_notes.txt` contains descriptions of different variables collected by the station.
+
+-   Import it into R and print it in a table as shown below with `kable()`.
+
+```{r}
+weather_station <- read.delim("https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/2015y_Weather_Station_notes.txt", header = TRUE, sep = "-", dec = ".")
+
+kable(weather_station)
+
+
+```
+
+`#` indicates invalid value by equipment inspection\
+`*` indicates invalid value by program inspection\
+`x` indicates invalid value by human inspection\
+`NR` indicates no rainfall\
+blank indicates no data
+
+#### 2.2 Data tidying
+
+-   Import `https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/2015y_Weather_Station.csv` into R. As you can see, this dataset is a classic example of untidy data: values of a variable (i.e. hour of the day) are stored as column names; variable names are stored in the `item` column.
+
+-   Clean this dataset up and restructure it into a tidy format.
+
+-   Parse the `date` variable into date format and parse `hour` into time.
+
+-   Turn all invalid values into `NA` and turn `NR` in rainfall into `0`.
+
+-   Parse all values into numbers.
+
+-   Show the first 6 rows and 10 columns of this cleaned dataset, as shown below, *without* using `kable()`.
+
+*Hints: you don’t have to perform these tasks in the given order; also, warning messages are not necessarily signs of trouble.*
+
+```{r}
+weather_2.2 <- read.csv("https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/2015y_Weather_Station.csv", colClasses = c("character"))
+view(weather_2.2)
+```
+
+Before cleaning:
+
+```{r}
+
+tibble(weather_2.2[1:6, 1:10])
+
+```
+
+After cleaning:
+
+```{r}
+weather_2.2_tidy_long <- weather_2.2 |> 
+  pivot_longer(cols = -c(date, station, item), names_to = "hour", values_to = "value" )
+ 
+weather_2.2_tidy_long |> 
+  mutate(date = ymd(date), hour = as.numeric(hour), hour= sprintf("%02d:00",hour %% 24), value = ifelse(value == "NR", "0", value))
+
+weather_2.2_tidy_long |> 
+  pivot_wider(names_from = item, values_from = value) |> 
+  tibble() |> 
+  head()
+  
+  
+
+```
+
+#### 2.3 Using this cleaned dataset, plot the daily variation in ambient temperature on September 25, 2015, as shown below.
