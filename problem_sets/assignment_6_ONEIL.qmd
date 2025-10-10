@@ -1,6 +1,6 @@
 ---
 title: "assignment_6_ONEIL"
-format: html
+format: gfm
 ---
 
 # Assignment 6: Data import and tidy data
