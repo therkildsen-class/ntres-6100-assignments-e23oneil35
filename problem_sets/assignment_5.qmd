@@ -120,7 +120,7 @@ gapminder |>
   geom_smooth(aes(x = gdpPercap, y = lifeExp, color = continent), se = FALSE)
 ```
 
-#### 2.4 Use facetting to solve the same problem. Include confidence intervals in this plots. 
+#### 2.4 Use facetting to solve the same problem. Include confidence intervals in this plots.
 
 ```{r}
 #| message: false
@@ -132,7 +132,7 @@ gapminder |>
   facet_wrap(~ continent)
 ```
 
-#### 2.5 Explore the trend in life expectancy through time in each continent. Color by continent. 
+#### 2.5 Explore the trend in life expectancy through time in each continent. Color by continent.
 
 ```{r}
 gapminder |> 
@@ -150,7 +150,7 @@ gapminder |>
   kable()
 ```
 
-#### 2.7  Using the filtered dataset, identify the countries that had abnormal trends in life expectancy by plotting, and discuss historical events possibly explaining these trends. (Hint: facet by country)
+#### 2.7 Using the filtered dataset, identify the countries that had abnormal trends in life expectancy by plotting, and discuss historical events possibly explaining these trends. (Hint: facet by country)
 
 ```{r}
 #| message: false
