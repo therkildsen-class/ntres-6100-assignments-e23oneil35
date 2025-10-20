@@ -1,0 +1,46 @@
+---
+title: "lab_7"
+format: github_document
+---
+
+```{r}
+library(tidyverse)
+library(knitr)
+library(nycflights13)
+
+flights |> 
+  head() |> 
+  kable()
+```
+
+#### **Question 1: Compute the average delay by destination, then join on the `airports` data frame so you can show the spatial distribution of delays. Here’s an easy way to draw a map of the United States:**
+
+```{r}
+##install.packages("maps")
+library(maps)
+
+airports |> 
+  semi_join(flights, c("faa" = "dest")) |>
+  ggplot(aes(lon, lat)) +
+    borders("state") +
+    geom_point() +
+    coord_quickmap()
+
+avg_dest_delays <- 
+  flights |> 
+  group_by(dest) |> 
+  summarise(delay = mean(arr_delay, na.rm = TRUE)) |> 
+  inner_join(airports, by = c(dest = "faa"))
+
+avg_dest_delays |> 
+  ggplot(aes(lon, lat, color = delay))+
+  borders("state")+
+  geom_point()+
+  coord_quickmap()
+```
+
+#### **Question 2: Is there a relationship between the age of a plane and its delays?**
+
+```{r}
+
+```

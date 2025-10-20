@@ -1,0 +1,9 @@
+---
+title: "Lab 4_gap_minder"
+format: html
+editor: visual
+---
+
+## 
+
+library(tidyverse) install.packages(dslabs)
