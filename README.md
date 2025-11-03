@@ -20,7 +20,7 @@ Please use the following table to grade the student's assignment:
 |      6      |                 |          X           |               |
 |      7      |       X          |                     |               |
 |      8      |                 |                     |        X       |
-|      9      |                 |                     |               |
+|      9      |                 |                     |        X       |
 
 `Assignment 2:https://github.com/e23oneil35/JuneTT-SamplingData_R.git`
 Assignment 3: https://e23oneil35.github.io/website_assignment_3_emo82/ 
