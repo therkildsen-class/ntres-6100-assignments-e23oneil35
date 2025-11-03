@@ -6,7 +6,7 @@
 ``` r
 library(tidyverse)
 library(knitr)
-#install.packages("knitr")
+library(lubridate)
 ```
 
 ## Exercise 1. Tibble and Data Import
@@ -73,18 +73,6 @@ tibble(fruit)
 
 ``` r
 fruit_1.3 <-read_delim("https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/dataset3.txt", quote ="/", skip = 2, na = c("Not Available", "?"))
-```
-
-    Rows: 3 Columns: 3
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: ";"
-    chr (1): Name
-    dbl (2): Weight, Price
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
  tibble(fruit_1.3)
 ```
 
@@ -163,8 +151,7 @@ blank indicates no data
 warning messages are not necessarily signs of trouble.*
 
 ``` r
-weather_2.2 <- read.csv("https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/2015y_Weather_Station.csv", colClasses = c("character"))
-view(weather_2.2)
+weather_2.2 <- read.csv("https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/2015y_Weather_Station.csv")
 ```
 
 Before cleaning:
@@ -186,50 +173,90 @@ tibble(weather_2.2[1:6, 1:10])
 After cleaning:
 
 ``` r
-weather_2.2_tidy_long <- weather_2.2 |> 
-  pivot_longer(cols = -c(date, station, item), names_to = "hour", values_to = "value" )
- 
-weather_2.2_tidy_long |> 
-  mutate(date = ymd(date), hour = as.numeric(hour), hour= sprintf("%02d:00",hour %% 24), value = ifelse(value == "NR", "0", value))
+weather_raw <- read_csv("https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/2015y_Weather_Station.csv", col_names = (TRUE), guess_max = Inf)
+
+
+weather_clean <- weather_raw |>
+  pivot_longer(cols = c("00":"23"), names_to = "hour", values_to = "value") |>
+  pivot_wider(names_from = item, values_from = value) |>
+  mutate(date = as.Date(date), across(AMB_TEMP:PM10, as.numeric), hour = hms::as_hms(paste0(hour, ":00:00")))
+
+
+weather_clean <- weather_clean |>
+  mutate(RAINFALL = ifelse(RAINFALL == "NR", 0, RAINFALL)) |>
+  mutate(across(AMB_TEMP:PM10, ~na_if(.x, -99.99))) |>
+  mutate(across(AMB_TEMP:PM10, as.numeric))
+
+tibble(weather_clean[1:6, 1:10])
 ```
 
-    Warning: There was 1 warning in `mutate()`.
-    ℹ In argument: `hour = as.numeric(hour)`.
-    Caused by warning:
-    ! NAs introduced by coercion
-
-    # A tibble: 131,040 × 5
-       date       station item     hour  value
-       <date>     <chr>   <chr>    <chr> <chr>
-     1 2015-01-01 Cailiao AMB_TEMP NA:00 16   
-     2 2015-01-01 Cailiao AMB_TEMP NA:00 16   
-     3 2015-01-01 Cailiao AMB_TEMP NA:00 15   
-     4 2015-01-01 Cailiao AMB_TEMP NA:00 15   
-     5 2015-01-01 Cailiao AMB_TEMP NA:00 15   
-     6 2015-01-01 Cailiao AMB_TEMP NA:00 14   
-     7 2015-01-01 Cailiao AMB_TEMP NA:00 14   
-     8 2015-01-01 Cailiao AMB_TEMP NA:00 14   
-     9 2015-01-01 Cailiao AMB_TEMP NA:00 14   
-    10 2015-01-01 Cailiao AMB_TEMP NA:00 15   
-    # ℹ 131,030 more rows
-
-``` r
-weather_2.2_tidy_long |> 
-  pivot_wider(names_from = item, values_from = value) |> 
-  tibble() |> 
-  head()
-```
-
-    # A tibble: 6 × 18
-      date       station hour  AMB_TEMP CO    NO    NO2   NOx   O3    PM10  PM2.5
-      <chr>      <chr>   <chr> <chr>    <chr> <chr> <chr> <chr> <chr> <chr> <chr>
-    1 2015/01/01 Cailiao X00   16       0.74  1     15    16    35    171   76   
-    2 2015/01/01 Cailiao X01   16       0.7   0.8   13    14    36    174   78   
-    3 2015/01/01 Cailiao X02   15       0.66  1.1   13    14    35    160   69   
-    4 2015/01/01 Cailiao X03   15       0.61  1.7   12    13    34    142   60   
-    5 2015/01/01 Cailiao X04   15       0.51  2     11    13    34    123   52   
-    6 2015/01/01 Cailiao X05   14       0.51  1.7   13    15    32    110   44   
-    # ℹ 7 more variables: RAINFALL <chr>, RH <chr>, SO2 <chr>, WD_HR <chr>,
-    #   WIND_DIREC <chr>, WIND_SPEED <chr>, WS_HR <chr>
+    # A tibble: 6 × 10
+      date       station hour   AMB_TEMP    CO    NO   NO2   NOx    O3  PM10
+      <date>     <chr>   <time>    <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+    1 2015-01-01 Cailiao 00:00        16  0.74   1      15    16    35   171
+    2 2015-01-01 Cailiao 01:00        16  0.7    0.8    13    14    36   174
+    3 2015-01-01 Cailiao 02:00        15  0.66   1.1    13    14    35   160
+    4 2015-01-01 Cailiao 03:00        15  0.61   1.7    12    13    34   142
+    5 2015-01-01 Cailiao 04:00        15  0.51   2      11    13    34   123
+    6 2015-01-01 Cailiao 05:00        14  0.51   1.7    13    15    32   110
 
 #### 2.3 Using this cleaned dataset, plot the daily variation in ambient temperature on September 25, 2015, as shown below.
+
+``` r
+weather_clean |>
+  filter(date == "2015/09/15") |>
+  ggplot()+
+  geom_line(aes(x = hour, y = AMB_TEMP, group = station))
+```
+
+![](assignment_6_ONEIL_files/figure-commonmark/unnamed-chunk-10-1.png)
+
+#### 2.4 Plot the daily average ambient temperature throughout the year with a **continuous line**, as shown below.
+
+``` r
+weather_clean |> 
+  group_by(date) |> 
+  summarise(daily_avg_temp = mean(AMB_TEMP, na.rm = TRUE)) |> 
+  ggplot(aes(x = date, y = daily_avg_temp)) +
+  geom_line()
+```
+
+![](assignment_6_ONEIL_files/figure-commonmark/unnamed-chunk-11-1.png)
+
+#### 2.5 Plot the total rainfall per month in a bar chart, as shown below.
+
+*Hint: separating date into three columns might be helpful.*
+
+``` r
+weather_clean <- weather_clean |>
+  mutate(month = month(date), year = year(date))
+
+
+weather_clean |> 
+  group_by(month) |> 
+  mutate(RAINFALL = as.numeric(RAINFALL)) |> 
+  summarise(total_rainfall = sum(RAINFALL, na.rm = TRUE)) |> 
+  ggplot(aes(x = month, y = total_rainfall)) +
+  geom_bar(stat = "identity", fill = "black")
+```
+
+![](assignment_6_ONEIL_files/figure-commonmark/unnamed-chunk-12-1.png)
+
+#### 2.6 Plot the per hour variation in PM2.5 in the first week of September with a **continuous line**, as shown below.
+
+*Hint: uniting the date and hour and parsing the new variable might be
+helpful*
+
+``` r
+weather_clean$month <- as.character(weather_clean$month)
+weather_clean |> 
+  mutate(PM2.5 = as.numeric(PM2.5)) |> 
+  mutate(day = day(date), month = month(date), year = year(date)) |> 
+  mutate(datetime = as.POSIXct(paste(date, hour), format="%Y-%m-%d %H:%M:%S")) |> 
+  filter(month == 9) |> 
+  filter(between(day, 1, 7)) |> 
+  ggplot()+
+  geom_line(aes(x = datetime, y = PM2.5))
+```
+
+![](assignment_6_ONEIL_files/figure-commonmark/unnamed-chunk-13-1.png)
